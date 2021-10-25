@@ -1,0 +1,7 @@
+.canvas_box {
+    position: relative;
+    display: inline-block;
+}
+.canvas_box canvas{
+    border: 1px solid #ccc;
+}
