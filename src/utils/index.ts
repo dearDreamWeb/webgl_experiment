@@ -1,3 +1,7 @@
+import triangulation from './triangulation'
+import Vector2D from './vector2d.js'
+import { earcut } from './earcut.js'
+
 export function getGl(gl: WebGLRenderingContext) {
     const vertex = `
     attribute vec2 position;
@@ -79,7 +83,7 @@ export function draw(gl: WebGLRenderingContext, paramPoints: number[], type: str
     const vPosition = gl.getAttribLocation(program, "position"); // 获取顶点着色器中的position变量的地址
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
-    
+
     if (type === 'TRIANGLES') {
         gl.drawArrays(gl.TRIANGLES, 0, points.length / 2);
     } else {
@@ -101,3 +105,6 @@ export function parametric(gl: WebGLRenderingContext, xFunc: (t: number, ...args
         return { draw: draw.bind(null, gl, points), points };
     };
 }
+
+
+export { triangulation, Vector2D, earcut }

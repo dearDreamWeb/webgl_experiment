@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, InputHTMLAttributes } from "react";
-import Tess2 from "tess2";
-import { getGl, parametric, draw } from "./utils";
+import { getGl, parametric, Vector2D, triangulation } from "./utils";
 import drawPolygon, { updateFn } from "./utils/drawPolygon";
-import Vector2D from "./utils/vector2d.js";
+import "./app.css";
 
 // input组件
 interface IDiyInput extends InputHTMLAttributes<HTMLInputElement> {
@@ -70,6 +69,7 @@ function App(): JSX.Element {
   const [translateY, setTranslateY] = useState<number>(50);
   const [scale, setScale] = useState<number>(50);
   const [rotate, setRotate] = useState<number>(0);
+  const [isShowText, setIsShowText] = useState<boolean>(false);
 
   useEffect(() => {
     if (!canvas.current) {
@@ -78,6 +78,7 @@ function App(): JSX.Element {
     const gl = canvas.current.getContext("webgl")!;
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    canvas.current.onmousemove = null;
     const program = getGl(gl);
     switch (type) {
       case allTypes[0].type:
@@ -131,42 +132,9 @@ function App(): JSX.Element {
         }
         break;
       case allTypes[5].type:
-        const vertices = [
-          [-0.7, 0.5],
-          [-0.4, 0.3],
-          [-0.25, 0.71],
-          [-0.1, 0.56],
-          [-0.1, 0.13],
-          [0.4, 0.21],
-          [0, -0.6],
-          [-0.3, -0.3],
-          [-0.6, -0.3],
-          [-0.45, 0.0],
-        ].flat();
-        const contours = [vertices];
-        const res = Tess2.tesselate({
-          contours: contours,
-          windingRule: Tess2.WINDING_ODD,
-          elementType: Tess2.POLYGONS,
-          polySize: 3,
-          vertexSize: 2,
-        });
-
-        const points = [];
-        for (var i = 0; i < res.elements.length; i += 3) {
-          var a = res.elements[i],
-            b = res.elements[i + 1],
-            c = res.elements[i + 2];
-          points.push(
-            res.vertices[a * 2],
-            res.vertices[a * 2 + 1],
-            res.vertices[b * 2],
-            res.vertices[b * 2 + 1],
-            res.vertices[c * 2],
-            res.vertices[c * 2 + 1]
-          );
-        }
-        draw(gl, points, "TRIANGLES");
+        triangulation(gl, canvas.current, (isShow: boolean) =>
+          setIsShowText(isShow)
+        );
         break;
     }
   }, [type]);
@@ -181,49 +149,67 @@ function App(): JSX.Element {
   }, [type, inputValue, translateX, translateY, rotate, scale]);
 
   return (
-    <div className="App">
-      <div>
+    <div className="app">
+      <div className="app_nav">
         {allTypes.map(item => (
-          <button key={item.key} onClick={() => setType(item.type)}>
+          <button
+            key={item.key}
+            className={`${item.type === type ? "nav_active" : ""}`}
+            onClick={() => setType(item.type)}
+          >
             {item.text}
           </button>
         ))}
       </div>
-      {type === allTypes[0].type && (
-        <div>
-          <DiyInput
-            type="text"
-            value={inputValue}
-            onChangeHandler={val => setInputValue(val)}
-            min={3}
-          />
-          x移动：
-          <DiyInput
-            value={translateX}
-            onChangeHandler={val => setTranslateX(val)}
-          />
-          y移动：
-          <DiyInput
-            value={translateY}
-            setValue={setTranslateY}
-            onChangeHandler={val => setTranslateY(val)}
-          />
-          旋转：
-          <DiyInput
-            value={rotate}
-            setValue={setRotate}
-            onChangeHandler={val => setRotate(val)}
-          />
-          缩放：
-          <DiyInput
-            value={scale}
-            setValue={setScale}
-            onChangeHandler={val => setScale(val)}
-          />
-        </div>
-      )}
+
       <div className="canvas_box">
         <canvas width="800" height="800" ref={canvas}></canvas>
+        {/* 多边形选项 */}
+        {type === allTypes[0].type && (
+          <div className="polygon_box">
+            <div className="polygon_option">
+              <p className="polygon_option_text">边数：</p>
+              <DiyInput
+                type="text"
+                value={inputValue}
+                onChangeHandler={val => setInputValue(val)}
+                min={3}
+              />
+            </div>
+            <div className="polygon_option">
+              <p className="polygon_option_text"> x轴移动：</p>
+              <DiyInput
+                value={translateX}
+                onChangeHandler={val => setTranslateX(val)}
+              />
+            </div>
+            <div className="polygon_option">
+              <p className="polygon_option_text"> y轴移动：</p>
+              <DiyInput
+                value={translateY}
+                setValue={setTranslateY}
+                onChangeHandler={val => setTranslateY(val)}
+              />
+            </div>
+            <div className="polygon_option">
+              <p className="polygon_option_text"> 旋转：</p>
+              <DiyInput
+                value={rotate}
+                setValue={setRotate}
+                onChangeHandler={val => setRotate(val)}
+              />
+            </div>
+            <div className="polygon_option">
+              <p className="polygon_option_text"> 缩放：</p>
+              <DiyInput
+                value={scale}
+                setValue={setScale}
+                onChangeHandler={val => setScale(val)}
+              />
+            </div>
+          </div>
+        )}
+        {isShowText && "鼠标移入图形中！！！"}
       </div>
     </div>
   );
