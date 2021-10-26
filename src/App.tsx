@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, InputHTMLAttributes } from "react";
-import { getGl, parametric, Vector2D, triangulation } from "./utils";
+import {
+  getGl,
+  parametric,
+  Vector2D,
+  triangulation,
+  particleAnimation,
+} from "./utils";
 import drawPolygon, { updateFn } from "./utils/drawPolygon";
 import "./app.css";
 
@@ -59,10 +65,15 @@ const allTypes = [
     type: "triangulation",
     text: "三角剖分",
   },
+  {
+    key: "6",
+    type: "particleAnimation",
+    text: "粒子动画",
+  },
 ];
 
 function App(): JSX.Element {
-  const [type, setType] = useState("polygon");
+  const [type, setType] = useState("particleAnimation");
   const canvas = useRef<HTMLCanvasElement>(null);
   const [inputValue, setInputValue] = useState<number>(3);
   const [translateX, setTranslateX] = useState<number>(50);
@@ -135,6 +146,9 @@ function App(): JSX.Element {
         triangulation(gl, canvas.current, (isShow: boolean) =>
           setIsShowText(isShow)
         );
+        break;
+      case allTypes[6].type:
+        particleAnimation(gl);
         break;
     }
   }, [type]);

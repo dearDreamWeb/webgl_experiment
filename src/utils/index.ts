@@ -1,4 +1,5 @@
 import triangulation from './triangulation'
+import particleAnimation from './particleAnimation'
 import Vector2D from './vector2d.js'
 import { earcut } from './earcut.js'
 
@@ -107,4 +108,4 @@ export function parametric(gl: WebGLRenderingContext, xFunc: (t: number, ...args
 }
 
 
-export { triangulation, Vector2D, earcut }
+export { triangulation, Vector2D, earcut, particleAnimation }
