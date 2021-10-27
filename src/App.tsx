@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, InputHTMLAttributes } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  InputHTMLAttributes,
+  useMemo,
+} from 'react';
 import {
   getGl,
   parametric,
@@ -81,12 +87,19 @@ function App(): JSX.Element {
   const [scale, setScale] = useState<number>(50);
   const [rotate, setRotate] = useState<number>(0);
   const [isShowText, setIsShowText] = useState<boolean>(false);
-
+  const [gl, setGl] = useState<WebGLRenderingContext>();
+  
   useEffect(() => {
-    if (!canvas.current) {
+    if (!canvas.current || gl) {
       return;
     }
-    const gl = canvas.current.getContext('webgl')!;
+    setGl(canvas.current.getContext('webgl')!);
+  }, [type]);
+
+  useEffect(() => {
+    if (!gl || !canvas.current) {
+      return;
+    }
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     canvas.current.onmousemove = null;
@@ -151,7 +164,7 @@ function App(): JSX.Element {
         particleAnimation(gl);
         break;
     }
-  }, [type]);
+  }, [type, gl]);
 
   useEffect(() => {
     if (!canvas.current || type !== allTypes[0].type) {
