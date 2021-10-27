@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
         "earcut"
-    ]
+    ],
+    "prettier.jsxSingleQuote": true,
+    "prettier.singleQuote": true
 }
