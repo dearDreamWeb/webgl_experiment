@@ -1,16 +1,11 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  InputHTMLAttributes,
-  useMemo,
-} from 'react';
+import { useState, useEffect, useRef, InputHTMLAttributes } from 'react';
 import {
   getGl,
   parametric,
   Vector2D,
   triangulation,
   particleAnimation,
+  drawPolyline,
 } from './utils';
 import drawPolygon, { updateFn } from './utils/drawPolygon';
 import './app.css';
@@ -76,6 +71,11 @@ const allTypes = [
     type: 'particleAnimation',
     text: '粒子动画',
   },
+  {
+    key: '7',
+    type: 'drawPolyline',
+    text: '绘制带宽度的曲线',
+  },
 ];
 
 function App(): JSX.Element {
@@ -88,7 +88,7 @@ function App(): JSX.Element {
   const [rotate, setRotate] = useState<number>(0);
   const [isShowText, setIsShowText] = useState<boolean>(false);
   const [gl, setGl] = useState<WebGLRenderingContext>();
-  
+
   useEffect(() => {
     if (!canvas.current || gl) {
       return;
@@ -101,7 +101,7 @@ function App(): JSX.Element {
       return;
     }
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_CLEAR_VALUE);
     canvas.current.onmousemove = null;
     const program = getGl(gl);
     switch (type) {
@@ -163,17 +163,19 @@ function App(): JSX.Element {
       case allTypes[6].type:
         particleAnimation(gl);
         break;
+      case allTypes[7].type:
+        drawPolyline()
+        break;
     }
   }, [type, gl]);
 
   useEffect(() => {
-    if (!canvas.current || type !== allTypes[0].type) {
+    if (!canvas.current || type !== allTypes[0].type || !gl) {
       return;
     }
-    const gl = canvas.current.getContext('webgl')!;
     const program = getGl(gl);
     updateFn(gl, program, inputValue, scale, rotate, translateX, translateY);
-  }, [type, inputValue, translateX, translateY, rotate, scale]);
+  }, [type, gl, inputValue, translateX, translateY, rotate, scale]);
 
   return (
     <div className='app'>

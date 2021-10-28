@@ -1,4 +1,4 @@
-export default function particleAnimation(gl: WebGLRenderingContext,) {
+export default function particleAnimation(gl: WebGLRenderingContext) {
     const vertex = `
         attribute vec2 position;
 

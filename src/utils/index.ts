@@ -1,5 +1,6 @@
 import triangulation from './triangulation';
 import particleAnimation from './particleAnimation';
+import drawPolyline from './drawPolyline';
 import Vector2D from './vector2d.js';
 import { earcut } from './earcut.js';
 
@@ -114,4 +115,10 @@ export function parametric(
   };
 }
 
-export { triangulation, Vector2D, earcut, particleAnimation };
+export {
+  triangulation,
+  Vector2D,
+  earcut,
+  particleAnimation,
+  drawPolyline,
+};
