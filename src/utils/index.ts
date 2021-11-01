@@ -1,8 +1,10 @@
 import triangulation from './triangulation';
 import particleAnimation from './particleAnimation';
 import drawPolyline from './drawPolyline';
+import performanceTest from './performanceTest';
 import Vector2D from './vector2d.js';
 import { earcut } from './earcut.js';
+import filter, { updateFilter } from './filter';
 
 export function getGl(gl: WebGLRenderingContext) {
   const vertex = `
@@ -72,11 +74,11 @@ export function draw(
 
   let arr = [];
   if (type === 'helical') {
-    arr = paramPoints.map(item => item / 244);
+    arr = paramPoints.map((item) => item / 244);
   } else if (type === 'star') {
-    arr = paramPoints.map(item => item / 5);
+    arr = paramPoints.map((item) => item / 5);
   } else if (type === 'quadricBezier') {
-    arr = paramPoints.map(item => item / 196);
+    arr = paramPoints.map((item) => item / 196);
   } else {
     arr = [...paramPoints];
   }
@@ -121,4 +123,7 @@ export {
   earcut,
   particleAnimation,
   drawPolyline,
+  performanceTest,
+  filter,
+  updateFilter,
 };

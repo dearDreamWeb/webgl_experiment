@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
+    "build": "tsc && vite build && yarn pages",
+    "serve": "vite preview",
+    "pages": "cd dist && git init && git add . && git commit -m 'feat: build' && git remote add origin https://github.com/dearDreamWeb/webgl_experiment.git && git push -f origin master"
   },
   "dependencies": {
     "@types/earcut": "^2.1.1",

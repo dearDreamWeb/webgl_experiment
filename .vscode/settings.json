@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
-        "earcut"
+        "earcut",
+        "highp"
     ],
     "prettier.jsxSingleQuote": true,
     "prettier.singleQuote": true

@@ -38,3 +38,13 @@ button{
     border: 1px solid #ccc;
     cursor: pointer;
 }
+
+.filter_box{
+    margin-left: 12px;
+}
+
+.filter_box .filter_item_label{
+    display: inline-block;
+    text-align: right;
+    width: 80px;
+}

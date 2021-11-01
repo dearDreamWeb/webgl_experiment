@@ -6,6 +6,9 @@ import {
   triangulation,
   particleAnimation,
   drawPolyline,
+  performanceTest,
+  filter,
+  updateFilter,
 } from './utils';
 import drawPolygon, { updateFn } from './utils/drawPolygon';
 import './app.css';
@@ -27,7 +30,7 @@ const DiyInput = (props: IDiyInput) => {
     <input
       type={type || 'range'}
       value={val}
-      onChange={e => {
+      onChange={(e) => {
         setVal(Number(e.target.value));
       }}
       {...resetProps}
@@ -76,16 +79,29 @@ const allTypes = [
     type: 'drawPolyline',
     text: '绘制带宽度的曲线',
   },
+  {
+    key: '8',
+    type: 'performanceTest',
+    text: '性能检测',
+  },
+  {
+    key: '9',
+    type: 'filter',
+    text: '滤镜',
+  },
 ];
 
 function App(): JSX.Element {
-  const [type, setType] = useState(allTypes[0].type);
+  const [type, setType] = useState(allTypes[9].type);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [inputValue, setInputValue] = useState<number>(3);
   const [translateX, setTranslateX] = useState<number>(50);
   const [translateY, setTranslateY] = useState<number>(50);
   const [scale, setScale] = useState<number>(50);
   const [rotate, setRotate] = useState<number>(0);
+  const [brightness, setBrightness] = useState<number>(50);
+  const [hueAdjust, setHueAdjust] = useState<number>(50);
+  const [saturationVal, setSaturationVal] = useState<number>(50);
   const [isShowText, setIsShowText] = useState<boolean>(false);
   const [gl, setGl] = useState<WebGLRenderingContext>();
 
@@ -101,7 +117,9 @@ function App(): JSX.Element {
       return;
     }
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_CLEAR_VALUE);
+    gl.clear(
+      gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_CLEAR_VALUE
+    );
     canvas.current.onmousemove = null;
     const program = getGl(gl);
     switch (type) {
@@ -112,8 +130,8 @@ function App(): JSX.Element {
         // 抛物线参数方程
         const para = parametric(
           gl,
-          t => 0.05 * t,
-          t => 0.05 * t ** 2
+          (t) => 0.05 * t,
+          (t) => 0.05 * t ** 2
         );
         para(-10, 10, 100000).draw('');
         break;
@@ -164,7 +182,18 @@ function App(): JSX.Element {
         particleAnimation(gl);
         break;
       case allTypes[7].type:
-        drawPolyline()
+        drawPolyline();
+        break;
+      case allTypes[8].type:
+        performanceTest(canvas.current);
+        break;
+      case allTypes[9].type:
+        filter(
+          gl,
+          (brightness - 50) / 50,
+          (hueAdjust - 50) * 10,
+          (saturationVal - (50 - 16.6)) / 16.6
+        );
         break;
     }
   }, [type, gl]);
@@ -177,10 +206,22 @@ function App(): JSX.Element {
     updateFn(gl, program, inputValue, scale, rotate, translateX, translateY);
   }, [type, gl, inputValue, translateX, translateY, rotate, scale]);
 
+  useEffect(() => {
+    if (!canvas.current || type !== allTypes[9].type || !gl) {
+      return;
+    }
+    updateFilter(
+      gl,
+      (brightness - 50) / 50,
+      (hueAdjust - 50) * 10,
+      (saturationVal - (50 - 16.6)) / 16.6
+    );
+  }, [brightness, hueAdjust, saturationVal]);
+
   return (
     <div className='app'>
       <div className='app_nav'>
-        {allTypes.map(item => (
+        {allTypes.map((item) => (
           <button
             key={item.key}
             className={`${item.type === type ? 'nav_active' : ''}`}
@@ -201,7 +242,7 @@ function App(): JSX.Element {
               <DiyInput
                 type='text'
                 value={inputValue}
-                onChangeHandler={val => setInputValue(val)}
+                onChangeHandler={(val) => setInputValue(val)}
                 min={3}
               />
             </div>
@@ -209,7 +250,7 @@ function App(): JSX.Element {
               <p className='polygon_option_text'> x轴移动：</p>
               <DiyInput
                 value={translateX}
-                onChangeHandler={val => setTranslateX(val)}
+                onChangeHandler={(val) => setTranslateX(val)}
               />
             </div>
             <div className='polygon_option'>
@@ -217,7 +258,7 @@ function App(): JSX.Element {
               <DiyInput
                 value={translateY}
                 setValue={setTranslateY}
-                onChangeHandler={val => setTranslateY(val)}
+                onChangeHandler={(val) => setTranslateY(val)}
               />
             </div>
             <div className='polygon_option'>
@@ -225,7 +266,7 @@ function App(): JSX.Element {
               <DiyInput
                 value={rotate}
                 setValue={setRotate}
-                onChangeHandler={val => setRotate(val)}
+                onChangeHandler={(val) => setRotate(val)}
               />
             </div>
             <div className='polygon_option'>
@@ -233,12 +274,41 @@ function App(): JSX.Element {
               <DiyInput
                 value={scale}
                 setValue={setScale}
-                onChangeHandler={val => setScale(val)}
+                onChangeHandler={(val) => setScale(val)}
               />
             </div>
           </div>
         )}
         {isShowText && '鼠标移入图形中！！！'}
+        {/* 明亮度 */}
+        {type === allTypes[9].type && (
+          <div className='filter_box'>
+            <div>
+              <span className='filter_item_label'>明亮度：</span>
+              <input
+                type='range'
+                value={brightness}
+                onChange={(e) => setBrightness(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <span className='filter_item_label'>色相：</span>
+              <input
+                type='range'
+                value={hueAdjust}
+                onChange={(e) => setHueAdjust(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <span className='filter_item_label'>饱和度：</span>
+              <input
+                type='range'
+                value={saturationVal}
+                onChange={(e) => setSaturationVal(Number(e.target.value))}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
