@@ -79,11 +79,11 @@ const allTypes = [
     type: 'drawPolyline',
     text: '绘制带宽度的曲线',
   },
-  // {
-  //   key: '8',
-  //   type: 'performanceTest',
-  //   text: '性能检测',
-  // },
+  {
+    key: '8',
+    type: 'performanceTest',
+    text: '性能检测',
+  },
   {
     key: '9',
     type: 'filter',
@@ -221,15 +221,18 @@ function App(): JSX.Element {
   return (
     <div className='app'>
       <div className='app_nav'>
-        {allTypes.map((item) => (
-          <button
-            key={item.key}
-            className={`${item.type === type ? 'nav_active' : ''}`}
-            onClick={() => setType(item.type)}
-          >
-            {item.text}
-          </button>
-        ))}
+        {allTypes.map(
+          (item, index) =>
+            index !== 8 && (
+              <button
+                key={item.key}
+                className={`${item.type === type ? 'nav_active' : ''}`}
+                onClick={() => setType(item.type)}
+              >
+                {item.text}
+              </button>
+            )
+        )}
       </div>
 
       <div className='canvas_box'>
