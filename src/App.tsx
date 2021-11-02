@@ -79,11 +79,11 @@ const allTypes = [
     type: 'drawPolyline',
     text: '绘制带宽度的曲线',
   },
-  {
-    key: '8',
-    type: 'performanceTest',
-    text: '性能检测',
-  },
+  // {
+  //   key: '8',
+  //   type: 'performanceTest',
+  //   text: '性能检测',
+  // },
   {
     key: '9',
     type: 'filter',
