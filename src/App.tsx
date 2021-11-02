@@ -223,6 +223,7 @@ function App(): JSX.Element {
       <div className='app_nav'>
         {allTypes.map(
           (item, index) =>
+            index !== 6 &&
             index !== 8 && (
               <button
                 key={item.key}
