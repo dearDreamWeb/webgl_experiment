@@ -5,9 +5,17 @@ import performanceTest from './performanceTest';
 import Vector2D from './vector2d.js';
 import { earcut } from './earcut.js';
 import filter, { updateFilter } from './filter';
+import drawCube from './drawCube';
 
-export function getGl(gl: WebGLRenderingContext) {
-  const vertex = `
+/**
+ * 
+ * @param gl webgl上下文
+ * @param vertex 顶点着色器程序
+ * @param fragment 片元着色器程序
+ * @returns 
+ */
+export function getGl(gl: WebGLRenderingContext, vertex?: string, fragment?: string) {
+  vertex = vertex || `
     attribute vec2 position;
 
     void main() {
@@ -16,7 +24,7 @@ export function getGl(gl: WebGLRenderingContext) {
     }
 `;
 
-  const fragment = `
+  fragment = fragment || `
     void main() {
         gl_FragColor = vec4(1.0,0.0,0.0, 1.0);
     }
@@ -126,4 +134,5 @@ export {
   performanceTest,
   filter,
   updateFilter,
+  drawCube
 };

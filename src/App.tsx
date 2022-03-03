@@ -9,6 +9,7 @@ import {
   performanceTest,
   filter,
   updateFilter,
+  drawCube
 } from './utils';
 import drawPolygon, { updateFn } from './utils/drawPolygon';
 import './app.css';
@@ -89,10 +90,15 @@ const allTypes = [
     type: 'filter',
     text: '滤镜',
   },
+  {
+    key: '10',
+    type: 'drawCube',
+    text: '绘制立方体',
+  },
 ];
 
 function App(): JSX.Element {
-  const [type, setType] = useState(allTypes[9].type);
+  const [type, setType] = useState(allTypes[10].type);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [inputValue, setInputValue] = useState<number>(3);
   const [translateX, setTranslateX] = useState<number>(50);
@@ -101,6 +107,9 @@ function App(): JSX.Element {
   const [rotate, setRotate] = useState<number>(0);
   const [brightness, setBrightness] = useState<number>(50);
   const [hueAdjust, setHueAdjust] = useState<number>(50);
+  const [xRange, setXRange] = useState<number>(10);
+  const [yRange, setYRange] = useState<number>(10);
+  const [zRange, setZRange] = useState<number>(0);
   const [saturationVal, setSaturationVal] = useState<number>(50);
   const [isShowText, setIsShowText] = useState<boolean>(false);
   const [gl, setGl] = useState<WebGLRenderingContext>();
@@ -117,9 +126,7 @@ function App(): JSX.Element {
       return;
     }
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(
-      gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_CLEAR_VALUE
-    );
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     canvas.current.onmousemove = null;
     const program = getGl(gl);
     switch (type) {
@@ -195,9 +202,15 @@ function App(): JSX.Element {
           (saturationVal - (50 - 16.6)) / 16.6
         );
         break;
+      case allTypes[10].type:
+        drawCube({ gl, xRange, yRange,zRange })
+        break;
     }
   }, [type, gl]);
 
+  /**
+   * 绘制多边体
+   */
   useEffect(() => {
     if (!canvas.current || type !== allTypes[0].type || !gl) {
       return;
@@ -206,6 +219,9 @@ function App(): JSX.Element {
     updateFn(gl, program, inputValue, scale, rotate, translateX, translateY);
   }, [type, gl, inputValue, translateX, translateY, rotate, scale]);
 
+  /**
+   * 滤镜
+   */
   useEffect(() => {
     if (!canvas.current || type !== allTypes[9].type || !gl) {
       return;
@@ -217,6 +233,16 @@ function App(): JSX.Element {
       (saturationVal - (50 - 16.6)) / 16.6
     );
   }, [brightness, hueAdjust, saturationVal]);
+
+  /**
+   * 立方体
+   */
+  useEffect(() => {
+    if (!canvas.current || type !== allTypes[10].type || !gl) {
+      return;
+    }
+    drawCube({ gl, xRange, yRange,zRange })
+  }, [xRange, yRange,zRange])
 
   return (
     <div className='app'>
@@ -313,6 +339,40 @@ function App(): JSX.Element {
             </div>
           </div>
         )}
+        {/* 立方体 */}
+        {
+          type === allTypes[10].type && (
+            <div className='filter_box'>
+              <div>
+                <span className='filter_item_label'>x轴旋转角度：</span>
+                <input
+                  type='range'
+                  value={xRange}
+                  onChange={(e) => setXRange(Number(e.target.value))}
+                />
+                <span>{Math.floor(xRange * 3.6)}</span>
+              </div>
+              <div>
+                <span className='filter_item_label'>y轴旋转角度：</span>
+                <input
+                  type='range'
+                  value={yRange}
+                  onChange={(e) => setYRange(Number(e.target.value))}
+                />
+                <span>{Math.floor(yRange * 3.6)}</span>
+              </div>
+              <div>
+                <span className='filter_item_label'>z轴旋转角度：</span>
+                <input
+                  type='range'
+                  value={zRange}
+                  onChange={(e) => setZRange(Number(e.target.value))}
+                />
+                <span>{Math.floor(zRange * 3.6)}</span>
+              </div>
+            </div>
+          )
+        }
       </div>
     </div>
   );

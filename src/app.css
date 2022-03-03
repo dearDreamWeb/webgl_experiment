@@ -46,5 +46,5 @@ button{
 .filter_box .filter_item_label{
     display: inline-block;
     text-align: right;
-    width: 80px;
+    min-width: 80px;
 }
