@@ -6,6 +6,7 @@ import Vector2D from './vector2d.js';
 import { earcut } from './earcut.js';
 import filter, { updateFilter } from './filter';
 import drawCube from './drawCube';
+import imageOverlay from './imageOverlay';
 
 /**
  * 
@@ -134,5 +135,6 @@ export {
   performanceTest,
   filter,
   updateFilter,
-  drawCube
+  drawCube,
+  imageOverlay,
 };

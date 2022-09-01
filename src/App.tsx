@@ -9,7 +9,8 @@ import {
   performanceTest,
   filter,
   updateFilter,
-  drawCube
+  drawCube,
+  imageOverlay,
 } from './utils';
 import drawPolygon, { updateFn } from './utils/drawPolygon';
 import './app.css';
@@ -95,6 +96,11 @@ const allTypes = [
     type: 'drawCube',
     text: '绘制立方体',
   },
+  {
+    key: '11',
+    type: 'imageFilter',
+    text: '图片叠加效果',
+  },
 ];
 
 function App(): JSX.Element {
@@ -129,6 +135,7 @@ function App(): JSX.Element {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     canvas.current.onmousemove = null;
     const program = getGl(gl);
+    console.log(123);
     switch (type) {
       case allTypes[0].type:
         drawPolygon(gl, program, scale, rotate, translateX, translateY);
@@ -204,6 +211,9 @@ function App(): JSX.Element {
         break;
       case allTypes[10].type:
         drawCube({ gl, xRange, yRange,zRange })
+        break;
+      case allTypes[11].type:
+        imageOverlay({ gl })
         break;
     }
   }, [type, gl]);
